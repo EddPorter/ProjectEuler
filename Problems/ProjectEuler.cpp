@@ -3,12 +3,13 @@
 #include "Problem2.h"
 #include "Problem3.h"
 #include "Problem4.h"
+#include "Problem5.h"
 
 #include <iostream>   // cin, cout
 #include <ostream>    // endl
 using namespace std;
 
-#define LARGEST_PROBLEM   4
+#define LARGEST_PROBLEM   5
 
 void ProjectEuler::RunMenuLoop() {
   while(true) {
@@ -17,6 +18,7 @@ void ProjectEuler::RunMenuLoop() {
     cout << "  2. Sum of even-valued Fibonacci terms." << endl;
     cout << "  3. Largest prime factor." << endl;
     cout << "  4. Find largest palindrome product." << endl;
+    cout << "  5. Find smallest number with consecutive divisors." << endl;
     cout << "> ";
 
     unsigned short problem;
@@ -49,6 +51,12 @@ void ProjectEuler::RunMenuLoop() {
     case 4:
       {
         Problem4 problem;
+        problem.Run();
+      }
+      break;
+    case 5:
+      {
+        Problem5 problem;
         problem.Run();
       }
       break;
