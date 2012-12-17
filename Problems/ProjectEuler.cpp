@@ -5,12 +5,13 @@
 #include "Problem4.h"
 #include "Problem5.h"
 #include "Problem6.h"
+#include "Problem7.h"
 
 #include <iostream>   // cin, cout
 #include <ostream>    // endl
 using namespace std;
 
-#define LARGEST_PROBLEM   6
+#define LARGEST_PROBLEM   7
 
 void ProjectEuler::RunMenuLoop() {
   while(true) {
@@ -21,6 +22,7 @@ void ProjectEuler::RunMenuLoop() {
     cout << "  4. Find largest palindrome product." << endl;
     cout << "  5. Find smallest number with consecutive divisors." << endl;
     cout << "  6. Difference between sum of squares and square sum." << endl;
+    cout << "  7. Find nth prime number." << endl;
     cout << "> ";
 
     unsigned short problem;
@@ -65,6 +67,12 @@ void ProjectEuler::RunMenuLoop() {
     case 6:
       {
         Problem6 problem;
+        problem.Run();
+      }
+      break;
+    case 7:
+      {
+        Problem7 problem;
         problem.Run();
       }
       break;
