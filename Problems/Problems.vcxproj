@@ -77,7 +77,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Primes.cpp" />
     <ClCompile Include="Problem1.cpp" />
+    <ClCompile Include="Problem10.cpp" />
     <ClCompile Include="Problem2.cpp" />
     <ClCompile Include="Problem3.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -90,7 +92,9 @@
     <ClCompile Include="ProjectEuler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Primes.h" />
     <ClInclude Include="Problem1.h" />
+    <ClInclude Include="Problem10.h" />
     <ClInclude Include="Problem2.h" />
     <ClInclude Include="Problem3.h" />
     <ClInclude Include="Problem4.h" />

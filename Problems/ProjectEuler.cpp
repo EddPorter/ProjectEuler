@@ -8,12 +8,13 @@
 #include "Problem7.h"
 #include "Problem8.h"
 #include "Problem9.h"
+#include "Problem10.h"
 
 #include <iostream>   // cin, cout
 #include <ostream>    // endl
 using namespace std;
 
-#define LARGEST_PROBLEM   9
+#define LARGEST_PROBLEM   10
 
 void ProjectEuler::RunMenuLoop() {
   while(true) {
@@ -27,6 +28,7 @@ void ProjectEuler::RunMenuLoop() {
     cout << "  7. Find nth prime number." << endl;
     cout << "  8. Largest product of consecutive digits." << endl;
     cout << "  9. Special Pythagorean triplet." << endl;
+    cout << " 10. Summation of primes." << endl;
     cout << "> ";
 
     unsigned short problem;
@@ -89,6 +91,12 @@ void ProjectEuler::RunMenuLoop() {
     case 9:
       {
         Problem9 problem;
+        problem.Run();
+      }
+      break;
+    case 10:
+      {
+        Problem10 problem;
         problem.Run();
       }
       break;

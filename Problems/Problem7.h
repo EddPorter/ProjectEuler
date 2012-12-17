@@ -13,7 +13,5 @@ public:
 private:
   static int Method0();
   static int Method1();
-
-  static bool IsPrime1(unsigned number);
 };
 
