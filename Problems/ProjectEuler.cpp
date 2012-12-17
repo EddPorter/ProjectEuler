@@ -6,12 +6,13 @@
 #include "Problem5.h"
 #include "Problem6.h"
 #include "Problem7.h"
+#include "Problem8.h"
 
 #include <iostream>   // cin, cout
 #include <ostream>    // endl
 using namespace std;
 
-#define LARGEST_PROBLEM   7
+#define LARGEST_PROBLEM   8
 
 void ProjectEuler::RunMenuLoop() {
   while(true) {
@@ -23,6 +24,7 @@ void ProjectEuler::RunMenuLoop() {
     cout << "  5. Find smallest number with consecutive divisors." << endl;
     cout << "  6. Difference between sum of squares and square sum." << endl;
     cout << "  7. Find nth prime number." << endl;
+    cout << "  8. Largest product of consecutive digits." << endl;
     cout << "> ";
 
     unsigned short problem;
@@ -73,6 +75,12 @@ void ProjectEuler::RunMenuLoop() {
     case 7:
       {
         Problem7 problem;
+        problem.Run();
+      }
+      break;
+    case 8:
+      {
+        Problem8 problem;
         problem.Run();
       }
       break;
