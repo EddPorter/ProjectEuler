@@ -30,6 +30,7 @@ class Problem8 : public ProblemBase
 public:
   void Run();
 private:
+  static int Method0();
   static int Method1();
 };
 
