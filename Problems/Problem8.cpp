@@ -25,23 +25,26 @@ using namespace std;
   "71636269561882670428252483600823257530420752963450"
 
 void Problem8::Run() {
+  time_method<0>(Method0);
   time_method<1>(Method1);
+}
+
+int Problem8::Method0() {
+  return 40824;
 }
 
 int Problem8::Method1() {
   const string digits(DIGITS);
-  unsigned short product = 9 * 8 * 7 * 6 * 5;
-  char d = 4;
-  char product_string[6];
+  unsigned max_product = 0;
 
-  while (d > 0) {
-    itoa(product, product_string, 10);
-    if (digits.find(product_string) != digits.npos) {
-      return product;
+  for (auto b = digits.begin(), e = b + 5; e != digits.end(); ++b, ++e) {
+    unsigned product = std::accumulate(b, e, 1, [](unsigned acc, char next) {
+      return acc * (next - '0');
+    });
+    if (product > max_product) {
+      max_product = product;
     }
-    product /= (d + 5);
-    product *= d--;
   }
 
-  return -1;
+  return max_product;
 }
