@@ -78,33 +78,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Primes.cpp" />
-    <ClCompile Include="Problem1.cpp" />
-    <ClCompile Include="Problem10.cpp" />
-    <ClCompile Include="Problem2.cpp" />
-    <ClCompile Include="Problem3.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Problem4.cpp" />
-    <ClCompile Include="Problem5.cpp" />
-    <ClCompile Include="Problem6.cpp" />
-    <ClCompile Include="Problem7.cpp" />
-    <ClCompile Include="Problem8.cpp" />
-    <ClCompile Include="Problem9.cpp" />
     <ClCompile Include="ProjectEuler.cpp" />
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="Timing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Primes.h" />
-    <ClInclude Include="Problem1.h" />
-    <ClInclude Include="Problem10.h" />
-    <ClInclude Include="Problem2.h" />
-    <ClInclude Include="Problem3.h" />
-    <ClInclude Include="Problem4.h" />
-    <ClInclude Include="Problem5.h" />
-    <ClInclude Include="Problem6.h" />
-    <ClInclude Include="Problem7.h" />
-    <ClInclude Include="Problem8.h" />
-    <ClInclude Include="Problem9.h" />
-    <ClInclude Include="ProblemBase.h" />
     <ClInclude Include="ProjectEuler.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="Timing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
