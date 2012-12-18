@@ -15,84 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Problem1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Problem2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Problem3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProjectEuler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Problem4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Problem5.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Problem6.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Problem7.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Problem8.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Problem9.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Primes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Problem10.cpp">
+    <ClCompile Include="Timing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Problem1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Problem2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProblemBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Problem3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ProjectEuler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Problem4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Problem5.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Problem6.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Problem7.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Problem8.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Problem9.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Primes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Problem10.h">
+    <ClInclude Include="Timing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
