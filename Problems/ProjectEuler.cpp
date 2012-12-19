@@ -8,7 +8,7 @@
 #include <iostream>   // cin, cout
 #include <numeric>    // accumulate
 #include <ostream>    // endl
-#include <regex>      // regex, sregex_iterator
+#include <regex>      // regex, smatch, sregex_iterator
 #include <string>     // string
 #include <vector>     // vector
 using namespace std;
