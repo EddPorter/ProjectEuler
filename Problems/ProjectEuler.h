@@ -21,6 +21,7 @@ private:
   unsigned long long Problem9() const;
   unsigned long long Problem10() const;
   unsigned long long Problem11() const;
+  unsigned long long Problem12() const;
 
   void RunAndTimeMethod(ProjectEulerMemFn problem) const;
 };
