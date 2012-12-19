@@ -7,9 +7,9 @@ bool IsPalindrome(unsigned number) {
   char word[10];
   _ultoa_s(number, word, sizeof(word), 10);
   
-  std::string input(word);
-  std::string reverse(word);
-  std::reverse(reverse.begin(), reverse.end());
+  char *b = word, *e = word + strnlen_s(word, 10) - 1;
 
-  return input == reverse;
+  while (*b++ == *e--)
+    if (b > e) { return true; }
+  return false;
 }

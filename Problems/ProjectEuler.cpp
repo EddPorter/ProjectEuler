@@ -142,7 +142,6 @@ unsigned long long ProjectEuler::Problem4() const {
   for (unsigned first = 999; first >= 100; --first) {
     for(unsigned second = 999; second >= 100; --second) {
       unsigned product = first * second;
-      // 99.8% of time currently spent in IsPalindrome
       if (IsPalindrome(product) && product > largest_palindrome) {
         largest_palindrome = product;
       }

@@ -72,6 +72,9 @@
       <Path>Problem11.vsp</Path>
     </Report>
     <Report>
+      <Path>Problem4.vsp</Path>
+    </Report>
+    <Report>
       <Path>Problems121219.vsp</Path>
     </Report>
   </Reports>
