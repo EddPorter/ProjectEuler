@@ -567,24 +567,12 @@ unsigned long long ProjectEuler::Problem13() const {
 // 
 // NOTE: Once the chain starts the terms are allowed to go above one million.
 //
-// 181 seconds
+// 1.3 seconds
 unsigned long long ProjectEuler::Problem14() const {
-  map<unsigned, unsigned> cache;
-  // Pre-stage terminating value.
-  cache[1] = 1;
-
   unsigned max_starting = 1U;
   unsigned max_length = 1U;
 
   for (unsigned n = 1U; n < 1000000U; ++n) {
-    // Has this been processed already?
-    {
-      auto cached_value = cache.find(n);
-      if (cached_value != cache.end()) {
-        continue;
-      }
-    }
-
     unsigned cur = n;
     unsigned length = 1U;
     while (cur != 1) {
@@ -596,18 +584,10 @@ unsigned long long ProjectEuler::Problem14() const {
         ++cur;
       }
       ++length;
-
-      auto cached_value = cache.find(cur);
-      if (cached_value != cache.end()) {
-        unsigned new_length = length + (*cached_value).second - 1;
-        cache[n] = new_length;
-        if (new_length > max_length) {
-          max_starting = n;
-          max_length = new_length;
-        }
-        // Trick the while loop to complete.
-        cur = 1;
-      }
+    }
+    if (length > max_length) {
+      max_starting = n;
+      max_length = length;
     }
   }
 
