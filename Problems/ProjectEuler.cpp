@@ -7,6 +7,7 @@
 
 #include <climits>    // INT_MAX
 #include <iostream>   // cin, cout
+#include <map>        // map
 #include <numeric>    // accumulate
 #include <ostream>    // endl
 #include <regex>      // regex, smatch, sregex_iterator
@@ -35,6 +36,7 @@ void ProjectEuler::RunMenuLoop() const {
     cout << " 11. Largest product in a grid." << endl;
     cout << " 12. Highly divisible triangular number." << endl;
     cout << " 13. Large sum." << endl;
+    cout << " 14. Longest Collatz sequence." << endl;
     cout << "> ";
 
     unsigned short problem;
@@ -80,6 +82,9 @@ void ProjectEuler::RunMenuLoop() const {
       break;
     case 13:
       RunAndTimeMethod(&ProjectEuler::Problem13);
+      break;
+    case 14:
+      RunAndTimeMethod(&ProjectEuler::Problem14);
       break;
     default:
       cout << "Please enter a valid problem number from the menu." << endl;
@@ -542,4 +547,67 @@ unsigned long long ProjectEuler::Problem13() const {
   std::string total_string = static_cast<std::string>(total);
   std::string answer = total_string.substr(0, 10);
   return stoull(answer);  // 5537376230
+}
+
+// Longest Collatz sequence
+// Problem 14
+// 05 April 2002
+//
+// The following iterative sequence is defined for the set of positive
+// integers:
+//  n -> n/2 (n is even)
+//  n -> 3n + 1 (n is odd)
+// Using the rule above and starting with 13, we generate the following
+// sequence:
+//  13 -> 40 -> 20 -> 10 -> 5 -> 16 -> 8 -> 4 -> 2 -> 1
+// It can be seen that this sequence (starting at 13 and finishing at 1
+// contains 10 terms. Although it has not been proved yet (Collatz Problem), it
+// is thought that all starting numbers finish at 1.
+// Which starting number, under one million, produces the longest chain?
+// 
+// NOTE: Once the chain starts the terms are allowed to go above one million.
+unsigned long long ProjectEuler::Problem14() const {
+  map<unsigned, unsigned> cache;
+  // Pre-stage terminating value.
+  cache[1] = 1;
+
+  unsigned max_starting = 1U;
+  unsigned max_length = 1U;
+
+  for (unsigned n = 1U; n < 1000000U; ++n) {
+    // Has this been processed already?
+    {
+      auto cached_value = cache.find(n);
+      if (cached_value != cache.end()) {
+        continue;
+      }
+    }
+
+    unsigned cur = n;
+    unsigned length = 1U;
+    while (cur != 1) {
+      // Apply Collatz rule.
+      if (cur % 2 == 0) {
+        cur /= 2;
+      } else {
+        cur *= 3;
+        ++cur;
+      }
+      ++length;
+
+      auto cached_value = cache.find(cur);
+      if (cached_value != cache.end()) {
+        unsigned new_length = length + (*cached_value).second - 1;
+        cache[n] = new_length;
+        if (new_length > max_length) {
+          max_starting = n;
+          max_length = new_length;
+        }
+        // Trick the while loop to complete.
+        cur = 1;
+      }
+    }
+  }
+
+  return max_starting;  // 837799
 }
