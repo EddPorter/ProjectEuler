@@ -566,6 +566,8 @@ unsigned long long ProjectEuler::Problem13() const {
 // Which starting number, under one million, produces the longest chain?
 // 
 // NOTE: Once the chain starts the terms are allowed to go above one million.
+//
+// 181 seconds
 unsigned long long ProjectEuler::Problem14() const {
   map<unsigned, unsigned> cache;
   // Pre-stage terminating value.
