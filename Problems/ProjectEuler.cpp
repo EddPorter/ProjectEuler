@@ -8,6 +8,7 @@
 #include <climits>    // INT_MAX
 #include <iostream>   // cin, cout
 #include <map>        // map
+#include <memory>     // unique_ptr
 #include <numeric>    // accumulate
 #include <ostream>    // endl
 #include <regex>      // regex, smatch, sregex_iterator
@@ -567,12 +568,23 @@ unsigned long long ProjectEuler::Problem13() const {
 // 
 // NOTE: Once the chain starts the terms are allowed to go above one million.
 //
-// 1.3 seconds
+// 25 seconds
 unsigned long long ProjectEuler::Problem14() const {
+  unique_ptr<unsigned[]> cache(new unsigned[2000000]);
+  memset(cache.get(), 0, sizeof(unsigned) * 2000000);
+  cache[1] = 1;
+
   unsigned max_starting = 1U;
   unsigned max_length = 1U;
 
   for (unsigned n = 1U; n < 1000000U; ++n) {
+    if (cache[n] != 0U) {
+      continue;
+    }
+
+    vector<unsigned> path;
+    path.push_back(n);
+
     unsigned cur = n;
     unsigned length = 1U;
     while (cur != 1) {
@@ -584,6 +596,19 @@ unsigned long long ProjectEuler::Problem14() const {
         ++cur;
       }
       ++length;
+
+      if (cur < 2000000 && cache[cur] != 0U) {
+        length = cache[cur];
+        cur = 1;
+
+        for (auto i = path.crbegin(); i != path.crend(); ++i, ++length) {
+          if (*i < 2000000) {
+            cache[*i] = length + 1;
+          }
+        }
+      } else {
+        path.push_back(cur);
+      }
     }
     if (length > max_length) {
       max_starting = n;
