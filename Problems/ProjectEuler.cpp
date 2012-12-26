@@ -40,6 +40,8 @@ void ProjectEuler::RunMenuLoop() const {
     cout << " 13. Large sum." << endl;
     cout << " 14. Longest Collatz sequence." << endl;
     cout << " 15. Lattice paths." << endl;
+    cout << " 16. Power digit sum." << endl;
+    cout << " 17. Number letter counts. " << endl;
     cout << "> ";
 
     unsigned short problem;
@@ -91,6 +93,12 @@ void ProjectEuler::RunMenuLoop() const {
       break;
     case 15:
       RunAndTimeMethod(&ProjectEuler::Problem15);
+      break;
+    case 16:
+      RunAndTimeMethod(&ProjectEuler::Problem16);
+      break;
+    case 17:
+      RunAndTimeMethod(&ProjectEuler::Problem17);
       break;
     default:
       cout << "Please enter a valid problem number from the menu." << endl;
@@ -441,7 +449,6 @@ unsigned long long ProjectEuler::Problem12() const {
   }
 }
 
-
 // Large sum
 // Problem 13
 // 22 March 2002
@@ -615,4 +622,71 @@ unsigned long long ProjectEuler::Problem15() const {
   const unsigned LATTICE_SIZE = 20;
 
   return Pascal<2 * LATTICE_SIZE, LATTICE_SIZE>::Result;  // 137846528820
+}
+
+// Power digit sum
+// Problem 16
+// 03 May 2002
+// 
+// 2^15 = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.
+// What is the sum of the digits of the number 2^1000?
+unsigned long long ProjectEuler::Problem16() const {
+  BigAdder total = 1U;
+  for (unsigned short n = 1; n <= 1000; ++n) {
+    total += total;
+  }
+  string string_total = total;
+  return accumulate(string_total.cbegin(), string_total.cend(), 0,
+    [](unsigned acc, char value) { return acc + value - '0'; });  // 1366
+}
+
+// Number letter counts
+// Problem 17
+// 17 May 2002
+// 
+// If the numbers 1 to 5 are written out in words: one, two, three, four, five,
+// then there are 3 + 3 + 5 + 4 + 4 = 19 letters used in total.
+// If all the numbers from 1 to 1000 (one thousand) inclusive were written out
+// in words, how many letters would be used?
+// NOTE: Do not count spaces or hyphens. For example, 342 (three hundred and
+// forty-two) contains 23 letters and 115 (one hundred and fifteen) contains 20
+// letters. The use of "and" when writing out numbers is in compliance with
+// British usage.
+unsigned long long ProjectEuler::Problem17() const {
+  const unsigned short UNITS[] = { 0, 3, 3, 5, 4, 4, 3, 5, 5, 4 };
+  const unsigned short TENS[] =  { 0, 3, 6, 6, 5, 5, 5, 7, 6, 6 };
+  const unsigned short TEENS[] = { 0, 6, 6, 8, 8, 7, 7, 9, 8, 8 };
+  const unsigned short HUNDRED = 7;
+  const unsigned short THOUSAND = 8;
+  const unsigned short AND = 3;
+
+  unsigned long long count = 0;
+  for (unsigned int n = 1; n <= 1000; ++n) {
+    unsigned short units = n % 10;
+    unsigned short tens = n / 10 % 10;
+    unsigned short hundreds = n / 100 % 10;
+    unsigned short thousands = n / 1000;
+
+    // special case - teens
+    if (tens == 1 && units > 0) {
+      count += TEENS[units];
+    }
+    else {
+      count += TENS[tens];
+      count += UNITS[units];
+    }
+    
+    if (hundreds > 0) {
+      count += UNITS[hundreds] + HUNDRED;
+      if (tens > 0 || units > 0) {
+        count += AND;
+      }
+    }
+
+    if (thousands > 0) {
+      count += UNITS[thousands] + THOUSAND;
+    }
+  }
+
+  return count; // 21124
 }
