@@ -50,5 +50,8 @@
     <ClInclude Include="BigAdder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Pascal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

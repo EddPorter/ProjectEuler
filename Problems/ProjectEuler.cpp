@@ -1,19 +1,20 @@
 #include "ProjectEuler.h"
 
-#include "BigAdder.h" // BigAdder class
-#include "Primes.h"   // IsPrime
-#include "Text.h"     // IsPalindrome
-#include "Timing.h"   // QueryCounter, QueryFrequency
+#include "BigAdder.h"     // BigAdder class
+#include "Pascal.h"       // Pascal
+#include "Primes.h"       // IsPrime
+#include "Text.h"         // IsPalindrome
+#include "Timing.h"       // QueryCounter, QueryFrequency
 
-#include <climits>    // INT_MAX
-#include <deque>      // deque
-#include <iostream>   // cin, cout
-#include <map>        // map
-#include <numeric>    // accumulate
-#include <ostream>    // endl
-#include <regex>      // regex, smatch, sregex_iterator
-#include <string>     // string
-#include <vector>     // vector
+#include <climits>        // INT_MAX
+#include <deque>          // deque
+#include <iostream>       // cin, cout
+#include <map>            // map
+#include <numeric>        // accumulate
+#include <ostream>        // endl
+#include <regex>          // regex, smatch, sregex_iterator
+#include <string>         // string
+#include <vector>         // vector
 using namespace std;
 
 #define DISCARDS          5
@@ -607,69 +608,11 @@ unsigned long long ProjectEuler::Problem14() const {
 // backtracking) to the bottom right corner. 
 // How many routes are there through a 20x20 grid?
 unsigned long long ProjectEuler::Problem15() const {
+  // The answer is the nth central binomial coefficient:
+  //  C(2*n,n) = (2*n)!/(n!)^2
+  // http://oeis.org/A000984
+
   const unsigned LATTICE_SIZE = 20;
 
-  // Set up our initial lattice
-  vector<vector<bool>> lattice(LATTICE_SIZE + 1);
-  for (auto i = 0U; i < LATTICE_SIZE + 1; ++i) {
-    vector<bool> v(LATTICE_SIZE + 1);
-    lattice[i] = v;
-  }
-  lattice[0][0] = true;
-
-  deque<pair<pair<unsigned short, unsigned short>, vector<vector<bool>>>> paths;
-  paths.push_back(make_pair(make_pair(0, 0), lattice));
-
-  unsigned count = 0;
-  while (paths.size() != 0) {
-    // take next lattice
-    auto m = paths.back();
-    paths.pop_back();
-    auto l = m.second;
-
-    // create up to two valid moves
-    auto pos = m.first;
-    auto x = pos.first, y = pos.second;
-
-    // right
-    if (x + 1 <= LATTICE_SIZE && l[x + 1][y] != true) {
-      if (x + 1 == LATTICE_SIZE && y == LATTICE_SIZE) {
-        auto move = l;
-        move[x + 1][y] = true;
-        for (auto x = 0U; x <= LATTICE_SIZE; ++x) {
-          for (auto y = 0U; y <= LATTICE_SIZE; ++y) {
-            cout << l[y][x];
-          }
-          cout << endl;
-        }
-        cout << endl;
-        ++count;
-      } else {
-        auto move = l;
-        move[x + 1][y] = true;
-        paths.push_back(make_pair(make_pair(x + 1, y), move));
-      }
-    }
-    // down
-    if (y + 1 <= LATTICE_SIZE && l[x][y + 1] != true) {
-      if (x == LATTICE_SIZE && y + 1== LATTICE_SIZE) {
-        auto move = l;
-        move[x][y + 1] = true;
-        for (auto x = 0U; x <= LATTICE_SIZE; ++x) {
-          for (auto y = 0U; y <= LATTICE_SIZE; ++y) {
-            cout << l[y][x];
-          }
-          cout << endl;
-        }
-        cout << endl;
-        ++count;
-      } else {
-        auto move = l;
-        move[x][y + 1] = true;
-        paths.push_back(make_pair(make_pair(x, y + 1), move));
-      }
-    }
-  }
-
-  return count; // 137846528820
+  return Pascal<2 * LATTICE_SIZE, LATTICE_SIZE>::Result;  // 137846528820
 }
