@@ -13,7 +13,9 @@
 #include <numeric>        // accumulate
 #include <ostream>        // endl
 #include <regex>          // regex, smatch, sregex_iterator
+#include <set>            // set
 #include <string>         // string
+#include <utility>        // make_pair, pair
 #include <vector>         // vector
 using namespace std;
 
@@ -51,6 +53,7 @@ void ProjectEuler::RunMenuLoop() const {
       RUN_PROBLEM(15);
       RUN_PROBLEM(16);
       RUN_PROBLEM(17);
+      RUN_PROBLEM(408);
     default:
       cout << "Enter the number of the problem to execute:" << endl;
       cout << "  1. Sum of natural numbers that are multiples of 3 and 5." << endl;
@@ -70,6 +73,7 @@ void ProjectEuler::RunMenuLoop() const {
       cout << " 15. Lattice paths." << endl;
       cout << " 16. Power digit sum." << endl;
       cout << " 17. Number letter counts." << endl;
+      cout << "408. Admissible paths through a grid." << endl;
       break;
     }
   }
@@ -657,4 +661,62 @@ unsigned long long ProjectEuler::Problem17() const {
   }
 
   return count; // 21124
+}
+
+// Admissible paths through a grid
+// Problem 408
+// 29 December 2012
+// 
+// Let's call a lattice point (x, y) inadmissible if x, y and x + y are all
+// positive perfect squares. For example, (9, 16) is inadmissible, while (0, 4),
+// (3, 1) and (9, 4) are not.
+// 
+// Consider a path from point (x1, y1) to point (x2, y2) using only unit steps
+// north or east. Let's call such a path admissible if none of its intermediate
+// points are inadmissible.
+// 
+// Let P(n) be the number of admissible paths from (0, 0) to (n, n).
+// It can be verified that P(5) = 252, P(16) = 596994440 and
+// P(1000) mod 1000000007 = 341920854.
+// 
+// Find P(10000000) mod 1000000007.
+unsigned long long ProjectEuler::Problem408() const {
+  const unsigned long long N = 1000;
+  set<pair<unsigned, unsigned>> inadmissibles;
+
+  unsigned long long inadmissible = 0ULL;
+  for (auto x = 1; x <= N; ++x) {
+    if (static_cast<unsigned long long>(sqrt(x)) * static_cast<unsigned long long>(sqrt(x)) == x) {
+      for (auto y = 1; y <= N; ++y) {
+        if (static_cast<unsigned long long>(sqrt(y)) * static_cast<unsigned long long>(sqrt(y)) == y) {
+          if (static_cast<unsigned long long>(sqrt(x + y)) * static_cast<unsigned long long>(sqrt(x + y)) == x + y) {
+            inadmissibles.insert(make_pair(x, y));
+            inadmissible += CalculatePascal<1000000007>(x + y, x);
+          }
+        }
+      }
+    }
+  }
+
+  for (auto i = inadmissibles.cbegin(); i != inadmissibles.cend(); ++i) {
+    for (auto j = inadmissibles.cbegin(); j != inadmissibles.cend(); ++j) {
+      if (i == j) {
+        continue;
+      }
+      auto x1 = (*i).first;
+      auto y1 = (*i).second;
+      auto x2 = (*j).first;
+      auto y2 = (*j).second;
+      if (x1 < x2 || y1 < y2) {
+        continue;
+      }
+      auto x = x1 - x2;
+      auto y = y1 - y2;
+
+      // Remove double-counted
+      inadmissible = (inadmissible - CalculatePascal<1000000007>(x + y, x)) % 1000000007;
+    }
+  }
+
+  return (CalculatePascal<1000000007>(2 * N, N) - inadmissible) % 1000000007;
 }
