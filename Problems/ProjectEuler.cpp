@@ -21,27 +21,12 @@ using namespace std;
 #define TRIALS            5
 
 #define CALL_MEMBER_FN(object, ptrToMember)  ((object).*(ptrToMember))
+#define RUN_PROBLEM(n)  case n: \
+  RunAndTimeMethod(&ProjectEuler::Problem##n); \
+  break
 
 void ProjectEuler::RunMenuLoop() const {
   while(true) {
-    cout << "Enter the number of the problem to execute:" << endl;
-    cout << "  1. Sum of natural numbers that are multiples of 3 and 5." << endl;
-    cout << "  2. Sum of even-valued Fibonacci terms." << endl;
-    cout << "  3. Largest prime factor." << endl;
-    cout << "  4. Find largest palindrome product." << endl;
-    cout << "  5. Find smallest number with consecutive divisors." << endl;
-    cout << "  6. Difference between sum of squares and square sum." << endl;
-    cout << "  7. Find nth prime number." << endl;
-    cout << "  8. Largest product of consecutive digits." << endl;
-    cout << "  9. Special Pythagorean triplet." << endl;
-    cout << " 10. Summation of primes." << endl;
-    cout << " 11. Largest product in a grid." << endl;
-    cout << " 12. Highly divisible triangular number." << endl;
-    cout << " 13. Large sum." << endl;
-    cout << " 14. Longest Collatz sequence." << endl;
-    cout << " 15. Lattice paths." << endl;
-    cout << " 16. Power digit sum." << endl;
-    cout << " 17. Number letter counts. " << endl;
     cout << "> ";
 
     unsigned short problem;
@@ -49,59 +34,42 @@ void ProjectEuler::RunMenuLoop() const {
     cout << endl;
 
     switch (problem) {
-    case 1:
-      RunAndTimeMethod(&ProjectEuler::Problem1);
-      break;
-    case 2:
-      RunAndTimeMethod(&ProjectEuler::Problem2);
-      break;
-    case 3:
-      RunAndTimeMethod(&ProjectEuler::Problem3);
-      break;
-    case 4:
-      RunAndTimeMethod(&ProjectEuler::Problem4);
-      break;
-    case 5:
-      RunAndTimeMethod(&ProjectEuler::Problem5);
-      break;
-    case 6:
-      RunAndTimeMethod(&ProjectEuler::Problem6);
-      break;
-    case 7:
-      RunAndTimeMethod(&ProjectEuler::Problem7);
-      break;
-    case 8:
-      RunAndTimeMethod(&ProjectEuler::Problem8);
-      break;
-    case 9:
-      RunAndTimeMethod(&ProjectEuler::Problem9);
-      break;
-    case 10:
-      RunAndTimeMethod(&ProjectEuler::Problem10);
-      break;
-    case 11:
-      RunAndTimeMethod(&ProjectEuler::Problem11);
-      break;
-    case 12:
-      RunAndTimeMethod(&ProjectEuler::Problem12);
-      break;
-    case 13:
-      RunAndTimeMethod(&ProjectEuler::Problem13);
-      break;
-    case 14:
-      RunAndTimeMethod(&ProjectEuler::Problem14);
-      break;
-    case 15:
-      RunAndTimeMethod(&ProjectEuler::Problem15);
-      break;
-    case 16:
-      RunAndTimeMethod(&ProjectEuler::Problem16);
-      break;
-    case 17:
-      RunAndTimeMethod(&ProjectEuler::Problem17);
-      break;
+      RUN_PROBLEM(1);
+      RUN_PROBLEM(2);
+      RUN_PROBLEM(3);
+      RUN_PROBLEM(4);
+      RUN_PROBLEM(5);
+      RUN_PROBLEM(6);
+      RUN_PROBLEM(7);
+      RUN_PROBLEM(8);
+      RUN_PROBLEM(9);
+      RUN_PROBLEM(10);
+      RUN_PROBLEM(11);
+      RUN_PROBLEM(12);
+      RUN_PROBLEM(13);
+      RUN_PROBLEM(14);
+      RUN_PROBLEM(15);
+      RUN_PROBLEM(16);
+      RUN_PROBLEM(17);
     default:
-      cout << "Please enter a valid problem number from the menu." << endl;
+      cout << "Enter the number of the problem to execute:" << endl;
+      cout << "  1. Sum of natural numbers that are multiples of 3 and 5." << endl;
+      cout << "  2. Sum of even-valued Fibonacci terms." << endl;
+      cout << "  3. Largest prime factor." << endl;
+      cout << "  4. Find largest palindrome product." << endl;
+      cout << "  5. Find smallest number with consecutive divisors." << endl;
+      cout << "  6. Difference between sum of squares and square sum." << endl;
+      cout << "  7. Find nth prime number." << endl;
+      cout << "  8. Largest product of consecutive digits." << endl;
+      cout << "  9. Special Pythagorean triplet." << endl;
+      cout << " 10. Summation of primes." << endl;
+      cout << " 11. Largest product in a grid." << endl;
+      cout << " 12. Highly divisible triangular number." << endl;
+      cout << " 13. Large sum." << endl;
+      cout << " 14. Longest Collatz sequence." << endl;
+      cout << " 15. Lattice paths." << endl;
+      cout << " 16. Power digit sum." << endl;
+      cout << " 17. Number letter counts." << endl;
       break;
     }
   }
@@ -675,7 +643,7 @@ unsigned long long ProjectEuler::Problem17() const {
       count += TENS[tens];
       count += UNITS[units];
     }
-    
+
     if (hundreds > 0) {
       count += UNITS[hundreds] + HUNDRED;
       if (tens > 0 || units > 0) {
