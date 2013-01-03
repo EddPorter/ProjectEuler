@@ -51,6 +51,7 @@ void ProjectEuler::RunMenuLoop() const {
       RUN_PROBLEM(15);
       RUN_PROBLEM(16);
       RUN_PROBLEM(17);
+      RUN_PROBLEM(407);
     default:
       cout << "Enter the number of the problem to execute:" << endl;
       cout << "  1. Sum of natural numbers that are multiples of 3 and 5." << endl;
@@ -70,6 +71,7 @@ void ProjectEuler::RunMenuLoop() const {
       cout << " 15. Lattice paths." << endl;
       cout << " 16. Power digit sum." << endl;
       cout << " 17. Number letter counts." << endl;
+      cout << "407. Idempotents." << endl;
       break;
     }
   }
@@ -657,4 +659,29 @@ unsigned long long ProjectEuler::Problem17() const {
   }
 
   return count; // 21124
+}
+
+// Idempotents
+// Problem 407
+// 23 December 2012
+// 
+// If we calculate a^2 mod 6 for 0 <= a <= 5 we get: 0,1,4,3,4,1.
+// 
+// The largest value of a such that a^2 == a mod 6 is 4.
+// Let's call M(n) the largest value of a < n such that a^2 == a (mod n).
+// So M(6) = 4.
+// 
+// Find sum:M(n) for 1 <= n <= 10^7.
+unsigned long long ProjectEuler::Problem407() const {
+  unsigned long long sum = 0;
+  for (unsigned n = 1; n <= 10000000; ++n) {
+    for (unsigned a = n - 1; a >= 0; --a) {
+      unsigned long long value = (a * a) % n;
+      if (value == a) {
+        sum += a;
+        break;
+      }
+    }
+  }
+  return sum; // 23382359023074 - WRONG!
 }
