@@ -7,12 +7,14 @@
 #include "Timing.h"       // QueryCounter, QueryFrequency
 
 #include <climits>        // INT_MAX
-#include <deque>          // deque
 #include <iostream>       // cin, cout
 #include <map>            // map
+#include <memory>         // shared_ptr
 #include <numeric>        // accumulate
 #include <ostream>        // endl
+#include <queue>          // queue
 #include <regex>          // regex, smatch, sregex_iterator
+#include <set>            // set
 #include <string>         // string
 #include <vector>         // vector
 using namespace std;
@@ -51,6 +53,7 @@ void ProjectEuler::RunMenuLoop() const {
       RUN_PROBLEM(15);
       RUN_PROBLEM(16);
       RUN_PROBLEM(17);
+      RUN_PROBLEM(18);
     default:
       cout << "Enter the number of the problem to execute:" << endl;
       cout << "  1. Sum of natural numbers that are multiples of 3 and 5." << endl;
@@ -657,4 +660,109 @@ unsigned long long ProjectEuler::Problem17() const {
   }
 
   return count; // 21124
+}
+
+// Maximum path sum I
+// Problem 18
+// 31 May 2001
+//
+// By starting at the top of the triangle below and moving to adjacent numbers
+// on the row below, the maximum total from top to bottom is 23.
+//    3
+//   7 4
+//  2 4 6
+// 8 5 9 3
+// That is, 3 + 7 + 4 + 9 = 23.
+// Find the maximum total from top to bottom of the triangle below (see code).
+struct Edge;
+struct Node {
+  enum { Unseen, Visiting, Visited } state;
+  vector<shared_ptr<Edge>> out_edges;
+};
+struct Edge {
+  shared_ptr<Node> from;
+  shared_ptr<Node> to;
+  double weight;
+};
+
+unsigned long long ProjectEuler::Problem18() const {
+  vector<int> inputs;
+  inputs.push_back(3);
+  inputs.push_back(7);
+  inputs.push_back(4);
+  inputs.push_back(2);
+  inputs.push_back(4);
+  inputs.push_back(6);
+  inputs.push_back(8);
+  inputs.push_back(5);
+  inputs.push_back(9);
+  inputs.push_back(3);
+
+  queue<shared_ptr<Node>> frontier;
+
+  shared_ptr<Node> start_node = make_shared<Node>();//new Node);
+  frontier.push(start_node);
+
+  unsigned n = 0;
+  for(unsigned row = 1; n < inputs.size(); ++row) {
+    for(unsigned i = 0; i < row; ++i) {
+
+      shared_ptr<Node> from_node = frontier.front();
+      frontier.pop();
+      shared_ptr<Node> to_node = make_shared<Node>();
+      shared_ptr<Edge> left_edge = make_shared<Edge>();
+      left_edge->from = from_node;
+      left_edge->to = to_node;
+      left_edge->weight = 1.0 / inputs[n++];
+      from_node->out_edges.push_back(left_edge);
+      frontier.push(to_node);
+
+      if (i < row - 1) {
+        to_node = make_shared<Node>();
+        left_edge = make_shared<Edge>();
+        left_edge->from = from_node;
+        left_edge->to = to_node;
+        left_edge->weight = 1.0 / inputs[n];
+        from_node->out_edges.push_back(left_edge);
+        frontier.push(to_node);
+      }
+    }
+  }
+
+  shared_ptr<Node> end_node = make_shared<Node>();
+  while (frontier.size() != 0) {
+    shared_ptr<Node> from_node = frontier.front();
+    frontier.pop();
+    shared_ptr<Edge> edge = make_shared<Edge>();
+    edge->from = from_node;
+    edge->to = end_node;
+    edge->weight = 0.0;
+    from_node->out_edges.push_back(edge);
+    frontier.push(end_node);
+  }
+
+  set<shared_ptr<Node>> closedset;
+  set<shared_ptr<Node>> openset;
+  openset.insert(start_node);
+  map<shared_ptr<Node>, shared_ptr<Node>> camefrom;
+  
+  double score = 0.0;
+
+  while (openset.size() != 0) {
+    shared_ptr<Node> current = *(openset.begin());
+    if (current == end_node) {
+      return score;
+    }
+    openset.erase(current);
+    closedset.insert(current);
+    for (unsigned n = 0; n < current->out_edges.size(); ++n) {
+      shared_ptr<Node> neighbour = current->out_edges[n]->to;
+      if (closedset.find(neighbour) != closedset.end()) {
+        continue;
+      }
+      double new_score = score + current->out_edges[n]->weight;
+    }
+  }
+
+  return -1;
 }
