@@ -19,6 +19,10 @@
 #include <vector>         // vector
 using namespace std;
 
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graph_utility.hpp>
+#include <boost/property_map/property_map.hpp>
+
 #define DISCARDS          5
 #define TRIALS            5
 
@@ -698,71 +702,77 @@ unsigned long long ProjectEuler::Problem18() const {
   inputs.push_back(9);
   inputs.push_back(3);
 
-  queue<shared_ptr<Node>> frontier;
+  using namespace boost;
+  using std::shared_ptr;  // override shared_ptr implementation in boost
 
-  shared_ptr<Node> start_node = make_shared<Node>();//new Node);
-  frontier.push(start_node);
+  typedef double cost;
+  typedef adjacency_list<listS, listS, directedS,
+    property<vertex_index_t, unsigned>, property<edge_weight_t, cost>> Graph;
+  typedef graph_traits<Graph>::vertex_descriptor Vertex;
 
-  unsigned n = 0;
+  // 1 lines = 1 weight = 3 vertices = ((1+1)*(1+2))/2
+  // 2 lines = 3 weights = 6 vertices =  ((2+1)*(2+2))/2
+  // 3 lines = 6 weights = 10 vertices = ((3+1)*(3+2))/2
+  // 4 lines = 10 weights = 15 vertices = ((4+1)*(4+2))/2
+  const unsigned lines = 4; // TODO: count lines
+  const unsigned V = ((lines + 1) * (lines + 2)) / 2;
+  Graph g(V);
+
+  // number the vertices
+  auto id = get(vertex_index, g);
+  boost::graph_traits<Graph>::vertex_iterator vi, viend;
+  unsigned vnum = 0;
+  for (boost::tie(vi, viend) = vertices(g); vi != viend; ++vi) {
+    id[*vi] = vnum++;
+  }
+
+  queue<unsigned> frontier;
+  frontier.push(0);
+
+  unsigned n = 0, node = 0;
   for(unsigned row = 1; n < inputs.size(); ++row) {
     for(unsigned i = 0; i < row; ++i) {
 
-      shared_ptr<Node> from_node = frontier.front();
+      unsigned from_node = frontier.front();
       frontier.pop();
-      shared_ptr<Node> to_node = make_shared<Node>();
-      shared_ptr<Edge> left_edge = make_shared<Edge>();
-      left_edge->from = from_node;
-      left_edge->to = to_node;
-      left_edge->weight = 1.0 / inputs[n++];
-      from_node->out_edges.push_back(left_edge);
-      frontier.push(to_node);
+      add_edge(vertex(from_node, g), vertex(++node, g), 1.0 / inputs[n++], g);
+      frontier.push(node);
 
       if (i < row - 1) {
-        to_node = make_shared<Node>();
-        left_edge = make_shared<Edge>();
-        left_edge->from = from_node;
-        left_edge->to = to_node;
-        left_edge->weight = 1.0 / inputs[n];
-        from_node->out_edges.push_back(left_edge);
-        frontier.push(to_node);
+        add_edge(vertex(from_node, g), vertex(++node, g), 1.0 / inputs[n], g);
+        frontier.push(node);
       }
     }
   }
 
-  shared_ptr<Node> end_node = make_shared<Node>();
   while (frontier.size() != 0) {
-    shared_ptr<Node> from_node = frontier.front();
+    double from_node = frontier.front();
     frontier.pop();
-    shared_ptr<Edge> edge = make_shared<Edge>();
-    edge->from = from_node;
-    edge->to = end_node;
-    edge->weight = 0.0;
-    from_node->out_edges.push_back(edge);
-    frontier.push(end_node);
+    add_edge(vertex(from_node, g), vertex(node, g), 0.0, g);
   }
 
-  set<shared_ptr<Node>> closedset;
-  set<shared_ptr<Node>> openset;
-  openset.insert(start_node);
-  map<shared_ptr<Node>, shared_ptr<Node>> camefrom;
-  
-  double score = 0.0;
+  //set<shared_ptr<Node>> closedset;
+  //set<shared_ptr<Node>> openset;
+  //openset.insert(start_node);
+  //map<shared_ptr<Node>, shared_ptr<Node>> camefrom;
 
-  while (openset.size() != 0) {
-    shared_ptr<Node> current = *(openset.begin());
-    if (current == end_node) {
-      return score;
-    }
-    openset.erase(current);
-    closedset.insert(current);
-    for (unsigned n = 0; n < current->out_edges.size(); ++n) {
-      shared_ptr<Node> neighbour = current->out_edges[n]->to;
-      if (closedset.find(neighbour) != closedset.end()) {
-        continue;
-      }
-      double new_score = score + current->out_edges[n]->weight;
-    }
-  }
+  //double score = 0.0;
+
+  //while (openset.size() != 0) {
+  //  shared_ptr<Node> current = *(openset.begin());
+  //  if (current == end_node) {
+  //    return score;
+  //  }
+  //  openset.erase(current);
+  //  closedset.insert(current);
+  //  for (unsigned n = 0; n < current->out_edges.size(); ++n) {
+  //    shared_ptr<Node> neighbour = current->out_edges[n]->to;
+  //    if (closedset.find(neighbour) != closedset.end()) {
+  //      continue;
+  //    }
+  //    double new_score = score + current->out_edges[n]->weight;
+  //  }
+  //}
 
   return -1;
 }
