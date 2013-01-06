@@ -708,18 +708,6 @@ private:
 };
 
 unsigned long long ProjectEuler::Problem18() const {
-  vector<int> inputs;
-  inputs.push_back(3);
-  inputs.push_back(7);
-  inputs.push_back(4);
-  inputs.push_back(2);
-  inputs.push_back(4);
-  inputs.push_back(6);
-  inputs.push_back(8);
-  inputs.push_back(5);
-  inputs.push_back(9);
-  inputs.push_back(3);
-
   using namespace boost;
   using std::shared_ptr;  // override shared_ptr implementation in boost
   using std::queue;
@@ -729,11 +717,27 @@ unsigned long long ProjectEuler::Problem18() const {
     property<vertex_index_t, unsigned>, property<edge_weight_t, cost>> Graph;
   typedef graph_traits<Graph>::vertex_descriptor Vertex;
 
-  // 1 lines = 1 weight = 3 vertices
-  // 2 lines = 3 weights = 5 vertices
-  // 3 lines = 6 weights = 7 vertices
-  // 4 lines = 10 weights = 12 vertices
-  const unsigned lines = 4; // TODO: count lines
+  string weights("75\n95 64\n17 47 82\n18 35 87 10\n20 04 82 47 65\n19 01 23 "
+    "75 03 34\n88 02 77 73 07 63 67\n99 65 04 28 06 16 70 92\n41 41 26 56 83 "
+    "40 80 70 33\n41 48 72 33 47 32 37 16 94 29\n53 71 44 65 25 43 91 52 97 51 "
+    "14\n70 11 33 28 77 73 17 78 39 68 17 57\n91 71 52 38 17 14 91 43 58 50 27 "
+    "29 48\n63 66 04 68 89 53 67 30 73 16 69 87 40 31\n04 62 98 27 23 09 70 98 "
+    "73 93 38 53 60 04 23\n");
+  vector<int> inputs;
+  unsigned lines = 0;
+  std::regex r("(\\d+)|(\\n)|( )");
+  for (sregex_iterator i(weights.begin(), weights.end(), r), end; i != end; ++i) {
+    const smatch &m = *i;
+    if (m[1].matched) {
+      inputs.push_back(stoi(m[1]));
+    } else if (m[2].matched) {
+      ++lines;
+    } else if (m[3].matched) {
+    } else {
+      throw runtime_error("RUNTIME ERROR: Invalid weights input.");
+    }
+  }
+
   const unsigned V = 2 + ((lines) * (lines + 1)) / 2;
   Graph g(V);
 
@@ -782,7 +786,9 @@ unsigned long long ProjectEuler::Problem18() const {
 
   } catch (found_goal) {
     unsigned cost = 0;
+    list<Vertex> shortest_path;
     for (Vertex v = goal; ; v = p[v]) {
+      shortest_path.push_front(v);
       if (p[v] == v) {
         break;
       }
@@ -792,6 +798,14 @@ unsigned long long ProjectEuler::Problem18() const {
         cost += static_cast<unsigned>(1.0 / w);
       }
     }
+
+    cout << "Shortest path from " << start << " to "
+      << goal << ": ";
+    list<Vertex>::iterator spi = shortest_path.begin();
+    cout << start;
+    for(++spi; spi != shortest_path.end(); ++spi)
+      cout << " -> " << *spi;
+
     return cost;
   }
 
