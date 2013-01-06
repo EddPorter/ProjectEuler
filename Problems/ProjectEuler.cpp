@@ -19,6 +19,7 @@
 #include <vector>         // vector
 using namespace std;
 
+#include <boost/graph/astar_search.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_utility.hpp>
 #include <boost/property_map/property_map.hpp>
@@ -689,6 +690,23 @@ struct Edge {
   double weight;
 };
 
+struct found_goal {};
+
+// visitor that terminates when we find the goal
+template <class Vertex>
+class astar_goal_visitor : public boost::default_astar_visitor
+{
+public:
+  astar_goal_visitor(Vertex goal) : m_goal(goal) {}
+  template <class Graph>
+  void examine_vertex(Vertex u, Graph& g) {
+    if(u == m_goal)
+      throw found_goal();
+  }
+private:
+  Vertex m_goal;
+};
+
 unsigned long long ProjectEuler::Problem18() const {
   vector<int> inputs;
   inputs.push_back(3);
@@ -704,75 +722,78 @@ unsigned long long ProjectEuler::Problem18() const {
 
   using namespace boost;
   using std::shared_ptr;  // override shared_ptr implementation in boost
+  using std::queue;
 
   typedef double cost;
-  typedef adjacency_list<listS, listS, directedS,
+  typedef adjacency_list<listS, vecS, directedS,
     property<vertex_index_t, unsigned>, property<edge_weight_t, cost>> Graph;
   typedef graph_traits<Graph>::vertex_descriptor Vertex;
 
-  // 1 lines = 1 weight = 3 vertices = ((1+1)*(1+2))/2
-  // 2 lines = 3 weights = 6 vertices =  ((2+1)*(2+2))/2
-  // 3 lines = 6 weights = 10 vertices = ((3+1)*(3+2))/2
-  // 4 lines = 10 weights = 15 vertices = ((4+1)*(4+2))/2
+  // 1 lines = 1 weight = 3 vertices
+  // 2 lines = 3 weights = 5 vertices
+  // 3 lines = 6 weights = 7 vertices
+  // 4 lines = 10 weights = 12 vertices
   const unsigned lines = 4; // TODO: count lines
-  const unsigned V = ((lines + 1) * (lines + 2)) / 2;
+  const unsigned V = 2 + ((lines) * (lines + 1)) / 2;
   Graph g(V);
-
-  // number the vertices
-  auto id = get(vertex_index, g);
-  boost::graph_traits<Graph>::vertex_iterator vi, viend;
-  unsigned vnum = 0;
-  for (boost::tie(vi, viend) = vertices(g); vi != viend; ++vi) {
-    id[*vi] = vnum++;
-  }
 
   queue<unsigned> frontier;
   frontier.push(0);
 
   unsigned n = 0, node = 0;
+
+  unsigned from_node = frontier.front();
+  frontier.pop();
+  add_edge(vertex(from_node, g), vertex(++node, g), 1.0 / inputs[n++], g);
+  frontier.push(node);
+
   for(unsigned row = 1; n < inputs.size(); ++row) {
+    node++;
     for(unsigned i = 0; i < row; ++i) {
 
       unsigned from_node = frontier.front();
       frontier.pop();
-      add_edge(vertex(from_node, g), vertex(++node, g), 1.0 / inputs[n++], g);
       frontier.push(node);
+      add_edge(vertex(from_node, g), vertex(node++, g), 1.0 / inputs[n++], g);
 
-      if (i < row - 1) {
-        add_edge(vertex(from_node, g), vertex(++node, g), 1.0 / inputs[n], g);
+      add_edge(vertex(from_node, g), vertex(node, g), 1.0 / inputs[n], g);
+      if (i == row - 1) {
         frontier.push(node);
       }
     }
+    ++n;
   }
 
+  ++node;
   while (frontier.size() != 0) {
-    double from_node = frontier.front();
+    from_node = frontier.front();
     frontier.pop();
     add_edge(vertex(from_node, g), vertex(node, g), 0.0, g);
   }
 
-  //set<shared_ptr<Node>> closedset;
-  //set<shared_ptr<Node>> openset;
-  //openset.insert(start_node);
-  //map<shared_ptr<Node>, shared_ptr<Node>> camefrom;
 
-  //double score = 0.0;
+  Vertex start = vertex(0, g);
+  Vertex goal = vertex(node, g);
 
-  //while (openset.size() != 0) {
-  //  shared_ptr<Node> current = *(openset.begin());
-  //  if (current == end_node) {
-  //    return score;
-  //  }
-  //  openset.erase(current);
-  //  closedset.insert(current);
-  //  for (unsigned n = 0; n < current->out_edges.size(); ++n) {
-  //    shared_ptr<Node> neighbour = current->out_edges[n]->to;
-  //    if (closedset.find(neighbour) != closedset.end()) {
-  //      continue;
-  //    }
-  //    double new_score = score + current->out_edges[n]->weight;
-  //  }
-  //}
+  vector<Graph::vertex_descriptor> p(num_vertices(g));
+  try {
+    astar_search(g, start, [](Vertex v) { return 0; }, 
+      visitor(astar_goal_visitor<Vertex>(goal)).predecessor_map(&p[0]));
 
-  return -1;
+  } catch (found_goal) {
+    unsigned cost = 0;
+    for (Vertex v = goal; ; v = p[v]) {
+      if (p[v] == v) {
+        break;
+      }
+      auto e = edge(p[v], v, g);
+      auto w = get(edge_weight, g, e.first);
+      if (w > 0.0) {
+        cost += static_cast<unsigned>(1.0 / w);
+      }
+    }
+    return cost;
+  }
+
+  throw runtime_error("RUNTIME ERROR: Unable to find path in graph");
 }
