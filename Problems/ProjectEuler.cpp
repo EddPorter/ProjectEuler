@@ -7,41 +7,33 @@
 #include "Timing.h"       // QueryCounter, QueryFrequency
 
 #include <climits>        // INT_MAX
-#include <deque>          // deque
 #include <iostream>       // cin, cout
 #include <map>            // map
+#include <memory>         // shared_ptr
 #include <numeric>        // accumulate
 #include <ostream>        // endl
+#include <queue>          // queue
 #include <regex>          // regex, smatch, sregex_iterator
+#include <set>            // set
 #include <string>         // string
 #include <vector>         // vector
 using namespace std;
+
+#include <boost/graph/astar_search.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graph_utility.hpp>
+#include <boost/property_map/property_map.hpp>
 
 #define DISCARDS          5
 #define TRIALS            5
 
 #define CALL_MEMBER_FN(object, ptrToMember)  ((object).*(ptrToMember))
+#define RUN_PROBLEM(n)  case n: \
+  RunAndTimeMethod(&ProjectEuler::Problem##n); \
+  break
 
 void ProjectEuler::RunMenuLoop() const {
   while(true) {
-    cout << "Enter the number of the problem to execute:" << endl;
-    cout << "  1. Sum of natural numbers that are multiples of 3 and 5." << endl;
-    cout << "  2. Sum of even-valued Fibonacci terms." << endl;
-    cout << "  3. Largest prime factor." << endl;
-    cout << "  4. Find largest palindrome product." << endl;
-    cout << "  5. Find smallest number with consecutive divisors." << endl;
-    cout << "  6. Difference between sum of squares and square sum." << endl;
-    cout << "  7. Find nth prime number." << endl;
-    cout << "  8. Largest product of consecutive digits." << endl;
-    cout << "  9. Special Pythagorean triplet." << endl;
-    cout << " 10. Summation of primes." << endl;
-    cout << " 11. Largest product in a grid." << endl;
-    cout << " 12. Highly divisible triangular number." << endl;
-    cout << " 13. Large sum." << endl;
-    cout << " 14. Longest Collatz sequence." << endl;
-    cout << " 15. Lattice paths." << endl;
-    cout << " 16. Power digit sum." << endl;
-    cout << " 17. Number letter counts. " << endl;
     cout << "> ";
 
     unsigned short problem;
@@ -49,59 +41,43 @@ void ProjectEuler::RunMenuLoop() const {
     cout << endl;
 
     switch (problem) {
-    case 1:
-      RunAndTimeMethod(&ProjectEuler::Problem1);
-      break;
-    case 2:
-      RunAndTimeMethod(&ProjectEuler::Problem2);
-      break;
-    case 3:
-      RunAndTimeMethod(&ProjectEuler::Problem3);
-      break;
-    case 4:
-      RunAndTimeMethod(&ProjectEuler::Problem4);
-      break;
-    case 5:
-      RunAndTimeMethod(&ProjectEuler::Problem5);
-      break;
-    case 6:
-      RunAndTimeMethod(&ProjectEuler::Problem6);
-      break;
-    case 7:
-      RunAndTimeMethod(&ProjectEuler::Problem7);
-      break;
-    case 8:
-      RunAndTimeMethod(&ProjectEuler::Problem8);
-      break;
-    case 9:
-      RunAndTimeMethod(&ProjectEuler::Problem9);
-      break;
-    case 10:
-      RunAndTimeMethod(&ProjectEuler::Problem10);
-      break;
-    case 11:
-      RunAndTimeMethod(&ProjectEuler::Problem11);
-      break;
-    case 12:
-      RunAndTimeMethod(&ProjectEuler::Problem12);
-      break;
-    case 13:
-      RunAndTimeMethod(&ProjectEuler::Problem13);
-      break;
-    case 14:
-      RunAndTimeMethod(&ProjectEuler::Problem14);
-      break;
-    case 15:
-      RunAndTimeMethod(&ProjectEuler::Problem15);
-      break;
-    case 16:
-      RunAndTimeMethod(&ProjectEuler::Problem16);
-      break;
-    case 17:
-      RunAndTimeMethod(&ProjectEuler::Problem17);
-      break;
+      RUN_PROBLEM(1);
+      RUN_PROBLEM(2);
+      RUN_PROBLEM(3);
+      RUN_PROBLEM(4);
+      RUN_PROBLEM(5);
+      RUN_PROBLEM(6);
+      RUN_PROBLEM(7);
+      RUN_PROBLEM(8);
+      RUN_PROBLEM(9);
+      RUN_PROBLEM(10);
+      RUN_PROBLEM(11);
+      RUN_PROBLEM(12);
+      RUN_PROBLEM(13);
+      RUN_PROBLEM(14);
+      RUN_PROBLEM(15);
+      RUN_PROBLEM(16);
+      RUN_PROBLEM(17);
+      RUN_PROBLEM(18);
     default:
-      cout << "Please enter a valid problem number from the menu." << endl;
+      cout << "Enter the number of the problem to execute:" << endl;
+      cout << "  1. Sum of natural numbers that are multiples of 3 and 5." << endl;
+      cout << "  2. Sum of even-valued Fibonacci terms." << endl;
+      cout << "  3. Largest prime factor." << endl;
+      cout << "  4. Find largest palindrome product." << endl;
+      cout << "  5. Find smallest number with consecutive divisors." << endl;
+      cout << "  6. Difference between sum of squares and square sum." << endl;
+      cout << "  7. Find nth prime number." << endl;
+      cout << "  8. Largest product of consecutive digits." << endl;
+      cout << "  9. Special Pythagorean triplet." << endl;
+      cout << " 10. Summation of primes." << endl;
+      cout << " 11. Largest product in a grid." << endl;
+      cout << " 12. Highly divisible triangular number." << endl;
+      cout << " 13. Large sum." << endl;
+      cout << " 14. Longest Collatz sequence." << endl;
+      cout << " 15. Lattice paths." << endl;
+      cout << " 16. Power digit sum." << endl;
+      cout << " 17. Number letter counts." << endl;
       break;
     }
   }
@@ -675,7 +651,7 @@ unsigned long long ProjectEuler::Problem17() const {
       count += TENS[tens];
       count += UNITS[units];
     }
-    
+
     if (hundreds > 0) {
       count += UNITS[hundreds] + HUNDRED;
       if (tens > 0 || units > 0) {
@@ -689,4 +665,112 @@ unsigned long long ProjectEuler::Problem17() const {
   }
 
   return count; // 21124
+}
+
+// Maximum path sum I
+// Problem 18
+// 31 May 2001
+//
+// By starting at the top of the triangle below and moving to adjacent numbers
+// on the row below, the maximum total from top to bottom is 23.
+//    3
+//   7 4
+//  2 4 6
+// 8 5 9 3
+// That is, 3 + 7 + 4 + 9 = 23.
+// Find the maximum total from top to bottom of the triangle below (see code).
+
+typedef unsigned cost;
+typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
+  boost::no_property, boost::property<boost::edge_weight_t, cost>> Graph;
+typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
+typedef boost::graph_traits<Graph>::edge_descriptor Edge;
+
+class max_recorder : public boost::default_bfs_visitor
+{
+public:
+  max_recorder(unsigned *maxarray) : m(maxarray) { }
+
+  void examine_edge(Edge e, const Graph& g) {
+    using namespace boost;
+
+    cost w = get(edge_weight, g, e);
+    Vertex u = source(e, g);
+    Vertex v = target(e, g);
+    if (m[u] + w > m[v]) {
+      m[v] = m[u] + w;
+    }
+  }
+private:
+  unsigned *m;
+};
+
+unsigned long long ProjectEuler::Problem18() const {
+  using namespace boost;
+  using std::shared_ptr;  // override shared_ptr implementation in boost
+  using std::queue;
+
+  string weights("75\n95 64\n17 47 82\n18 35 87 10\n20 04 82 47 65\n19 01 23 "
+    "75 03 34\n88 02 77 73 07 63 67\n99 65 04 28 06 16 70 92\n41 41 26 56 83 "
+    "40 80 70 33\n41 48 72 33 47 32 37 16 94 29\n53 71 44 65 25 43 91 52 97 51 "
+    "14\n70 11 33 28 77 73 17 78 39 68 17 57\n91 71 52 38 17 14 91 43 58 50 27 "
+    "29 48\n63 66 04 68 89 53 67 30 73 16 69 87 40 31\n04 62 98 27 23 09 70 98 "
+    "73 93 38 53 60 04 23\n");
+  vector<int> inputs;
+  unsigned lines = 0;
+  std::regex r("(\\d+)|(\\n)|( )");
+  for (sregex_iterator i(weights.begin(), weights.end(), r), end; i != end; ++i) {
+    const smatch &m = *i;
+    if (m[1].matched) {
+      inputs.push_back(stoi(m[1]));
+    } else if (m[2].matched) {
+      ++lines;
+    } else if (m[3].matched) {
+    } else {
+      throw runtime_error("RUNTIME ERROR: Invalid weights input.");
+    }
+  }
+
+  const unsigned V = 2 + ((lines) * (lines + 1)) / 2;
+  Graph g(V);
+
+  // construct graph
+  {
+    queue<unsigned> frontier;
+    frontier.push(0);
+
+    unsigned n = 0, node = 0;
+
+    unsigned from_node = frontier.front();
+    frontier.pop();
+    add_edge(vertex(from_node, g), vertex(++node, g), inputs[n++], g);
+    frontier.push(node);
+
+    for(unsigned row = 1; n < inputs.size(); ++row) {
+      node++;
+      for(unsigned i = 0; i < row; ++i) {
+        from_node = frontier.front();
+        frontier.pop();
+        frontier.push(node);
+        add_edge(vertex(from_node, g), vertex(node++, g), inputs[n++], g);
+
+        add_edge(vertex(from_node, g), vertex(node, g), inputs[n], g);
+      }
+      frontier.push(node);
+      ++n;
+    }
+
+    ++node;
+    while (frontier.size() != 0) {
+      from_node = frontier.front();
+      frontier.pop();
+      add_edge(vertex(from_node, g), vertex(node, g), 0, g);
+    }
+  }
+
+  Vertex start = vertex(0, g);
+  vector<cost> max_number(num_vertices(g), 0);
+  breadth_first_search(g, start, visitor(max_recorder(&max_number[0])));
+
+  return max_number[num_vertices(g) - 1];   // 1074
 }
