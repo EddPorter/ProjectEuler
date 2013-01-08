@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class ProjectEuler;
 
 typedef unsigned long long (ProjectEuler::*ProjectEulerMemFn)() const;
@@ -28,6 +30,9 @@ private:
   unsigned long long Problem16() const;
   unsigned long long Problem17() const;
   unsigned long long Problem18() const;
+  unsigned long long Problem67() const;
 
   void RunAndTimeMethod(ProjectEulerMemFn problem) const;
+  
+  unsigned long long FindMaximumPath(const std::string &weights) const;
 };

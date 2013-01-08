@@ -7,6 +7,7 @@
 #include "Timing.h"       // QueryCounter, QueryFrequency
 
 #include <climits>        // INT_MAX
+#include <fstream>        // ifstream
 #include <iostream>       // cin, cout
 #include <map>            // map
 #include <memory>         // shared_ptr
@@ -15,6 +16,7 @@
 #include <queue>          // queue
 #include <regex>          // regex, smatch, sregex_iterator
 #include <set>            // set
+#include <sstream>        // stringstream
 #include <string>         // string
 #include <vector>         // vector
 using namespace std;
@@ -59,6 +61,7 @@ void ProjectEuler::RunMenuLoop() const {
       RUN_PROBLEM(16);
       RUN_PROBLEM(17);
       RUN_PROBLEM(18);
+      RUN_PROBLEM(67);
     default:
       cout << "Enter the number of the problem to execute:" << endl;
       cout << "  1. Sum of natural numbers that are multiples of 3 and 5." << endl;
@@ -78,6 +81,8 @@ void ProjectEuler::RunMenuLoop() const {
       cout << " 15. Lattice paths." << endl;
       cout << " 16. Power digit sum." << endl;
       cout << " 17. Number letter counts." << endl;
+      cout << " 18. Maximum path sum I." << endl;
+      cout << " 67. Maximum path sum II." << endl;
       break;
     }
   }
@@ -705,18 +710,12 @@ private:
   unsigned *m;
 };
 
-unsigned long long ProjectEuler::Problem18() const {
+unsigned long long ProjectEuler::FindMaximumPath(const string &weights) const {
   using namespace boost;
   using std::shared_ptr;  // override shared_ptr implementation in boost
   using std::queue;
 
-  string weights("75\n95 64\n17 47 82\n18 35 87 10\n20 04 82 47 65\n19 01 23 "
-    "75 03 34\n88 02 77 73 07 63 67\n99 65 04 28 06 16 70 92\n41 41 26 56 83 "
-    "40 80 70 33\n41 48 72 33 47 32 37 16 94 29\n53 71 44 65 25 43 91 52 97 51 "
-    "14\n70 11 33 28 77 73 17 78 39 68 17 57\n91 71 52 38 17 14 91 43 58 50 27 "
-    "29 48\n63 66 04 68 89 53 67 30 73 16 69 87 40 31\n04 62 98 27 23 09 70 98 "
-    "73 93 38 53 60 04 23\n");
-  vector<int> inputs;
+  vector<unsigned> inputs;
   unsigned lines = 0;
   std::regex r("(\\d+)|(\\n)|( )");
   for (sregex_iterator i(weights.begin(), weights.end(), r), end; i != end; ++i) {
@@ -772,5 +771,32 @@ unsigned long long ProjectEuler::Problem18() const {
   vector<cost> max_number(num_vertices(g), 0);
   breadth_first_search(g, start, visitor(max_recorder(&max_number[0])));
 
-  return max_number[num_vertices(g) - 1];   // 1074
+  return max_number[num_vertices(g) - 1];
+}
+
+unsigned long long ProjectEuler::Problem18() const {
+  string weights("75\n95 64\n17 47 82\n18 35 87 10\n20 04 82 47 65\n19 01 23 "
+    "75 03 34\n88 02 77 73 07 63 67\n99 65 04 28 06 16 70 92\n41 41 26 56 83 "
+    "40 80 70 33\n41 48 72 33 47 32 37 16 94 29\n53 71 44 65 25 43 91 52 97 51 "
+    "14\n70 11 33 28 77 73 17 78 39 68 17 57\n91 71 52 38 17 14 91 43 58 50 27 "
+    "29 48\n63 66 04 68 89 53 67 30 73 16 69 87 40 31\n04 62 98 27 23 09 70 98 "
+    "73 93 38 53 60 04 23\n");
+
+  return FindMaximumPath(weights);  // 1074
+}
+
+// Maximum path sum II
+// Problem 18
+// 9 April 2004
+//
+// This is a much more difficult version of Problem 18. It is not possible to
+// try every route to solve this problem, as there are 2^99 altogether! If you
+// could check one trillion (10^12) routes every second it would take over
+// twenty billion years to check them all. There is an efficient algorithm to
+// solve it. ;o)
+unsigned long long ProjectEuler::Problem67() const {
+  ifstream file("triangle.txt");
+  stringstream input;
+  input << file.rdbuf();
+  return FindMaximumPath(input.str());  // 7273
 }
