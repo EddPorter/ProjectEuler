@@ -679,43 +679,36 @@ unsigned long long ProjectEuler::Problem17() const {
 // 8 5 9 3
 // That is, 3 + 7 + 4 + 9 = 23.
 // Find the maximum total from top to bottom of the triangle below (see code).
-struct Edge;
-struct Node {
-  enum { Unseen, Visiting, Visited } state;
-  vector<shared_ptr<Edge>> out_edges;
-};
-struct Edge {
-  shared_ptr<Node> from;
-  shared_ptr<Node> to;
-  double weight;
-};
 
-struct found_goal {};
+typedef unsigned cost;
+typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
+  boost::no_property, boost::property<boost::edge_weight_t, cost>> Graph;
+typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
+typedef boost::graph_traits<Graph>::edge_descriptor Edge;
 
-// visitor that terminates when we find the goal
-template <class Vertex>
-class astar_goal_visitor : public boost::default_astar_visitor
+class max_recorder : public boost::default_bfs_visitor
 {
 public:
-  astar_goal_visitor(Vertex goal) : m_goal(goal) {}
-  template <class Graph>
-  void examine_vertex(Vertex u, Graph& g) {
-    if(u == m_goal)
-      throw found_goal();
+  max_recorder(unsigned *maxarray) : m(maxarray) { }
+
+  void examine_edge(Edge e, const Graph& g) {
+    using namespace boost;
+
+    cost w = get(edge_weight, g, e);
+    Vertex u = source(e, g);
+    Vertex v = target(e, g);
+    if (m[u] + w > m[v]) {
+      m[v] = m[u] + w;
+    }
   }
 private:
-  Vertex m_goal;
+  unsigned *m;
 };
 
 unsigned long long ProjectEuler::Problem18() const {
   using namespace boost;
   using std::shared_ptr;  // override shared_ptr implementation in boost
   using std::queue;
-
-  typedef double cost;
-  typedef adjacency_list<listS, vecS, directedS,
-    property<vertex_index_t, unsigned>, property<edge_weight_t, cost>> Graph;
-  typedef graph_traits<Graph>::vertex_descriptor Vertex;
 
   string weights("75\n95 64\n17 47 82\n18 35 87 10\n20 04 82 47 65\n19 01 23 "
     "75 03 34\n88 02 77 73 07 63 67\n99 65 04 28 06 16 70 92\n41 41 26 56 83 "
@@ -741,73 +734,43 @@ unsigned long long ProjectEuler::Problem18() const {
   const unsigned V = 2 + ((lines) * (lines + 1)) / 2;
   Graph g(V);
 
-  queue<unsigned> frontier;
-  frontier.push(0);
+  // construct graph
+  {
+    queue<unsigned> frontier;
+    frontier.push(0);
 
-  unsigned n = 0, node = 0;
+    unsigned n = 0, node = 0;
 
-  unsigned from_node = frontier.front();
-  frontier.pop();
-  add_edge(vertex(from_node, g), vertex(++node, g), 1.0 / inputs[n++], g);
-  frontier.push(node);
-
-  for(unsigned row = 1; n < inputs.size(); ++row) {
-    node++;
-    for(unsigned i = 0; i < row; ++i) {
-
-      unsigned from_node = frontier.front();
-      frontier.pop();
-      frontier.push(node);
-      add_edge(vertex(from_node, g), vertex(node++, g), 1.0 / inputs[n++], g);
-
-      add_edge(vertex(from_node, g), vertex(node, g), 1.0 / inputs[n], g);
-      if (i == row - 1) {
-        frontier.push(node);
-      }
-    }
-    ++n;
-  }
-
-  ++node;
-  while (frontier.size() != 0) {
-    from_node = frontier.front();
+    unsigned from_node = frontier.front();
     frontier.pop();
-    add_edge(vertex(from_node, g), vertex(node, g), 0.0, g);
-  }
+    add_edge(vertex(from_node, g), vertex(++node, g), inputs[n++], g);
+    frontier.push(node);
 
+    for(unsigned row = 1; n < inputs.size(); ++row) {
+      node++;
+      for(unsigned i = 0; i < row; ++i) {
+        from_node = frontier.front();
+        frontier.pop();
+        frontier.push(node);
+        add_edge(vertex(from_node, g), vertex(node++, g), inputs[n++], g);
+
+        add_edge(vertex(from_node, g), vertex(node, g), inputs[n], g);
+      }
+      frontier.push(node);
+      ++n;
+    }
+
+    ++node;
+    while (frontier.size() != 0) {
+      from_node = frontier.front();
+      frontier.pop();
+      add_edge(vertex(from_node, g), vertex(node, g), 0, g);
+    }
+  }
 
   Vertex start = vertex(0, g);
-  Vertex goal = vertex(node, g);
+  vector<cost> max_number(num_vertices(g), 0);
+  breadth_first_search(g, start, visitor(max_recorder(&max_number[0])));
 
-  vector<Graph::vertex_descriptor> p(num_vertices(g));
-  try {
-    astar_search(g, start, [](Vertex v) { return 0; }, 
-      visitor(astar_goal_visitor<Vertex>(goal)).predecessor_map(&p[0]));
-
-  } catch (found_goal) {
-    unsigned cost = 0;
-    list<Vertex> shortest_path;
-    for (Vertex v = goal; ; v = p[v]) {
-      shortest_path.push_front(v);
-      if (p[v] == v) {
-        break;
-      }
-      auto e = edge(p[v], v, g);
-      auto w = get(edge_weight, g, e.first);
-      if (w > 0.0) {
-        cost += static_cast<unsigned>(1.0 / w);
-      }
-    }
-
-    cout << "Shortest path from " << start << " to "
-      << goal << ": ";
-    list<Vertex>::iterator spi = shortest_path.begin();
-    cout << start;
-    for(++spi; spi != shortest_path.end(); ++spi)
-      cout << " -> " << *spi;
-
-    return cost;
-  }
-
-  throw runtime_error("RUNTIME ERROR: Unable to find path in graph");
+  return max_number[num_vertices(g) - 1];   // 1074
 }
